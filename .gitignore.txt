@@ -1,0 +1,29 @@
+# Eclipse IDE files
+.project
+.classpath
+.settings/
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+
+# Build output
+target/
+*.jar
+*.war
+*.class
+
+# Tomcat files
+apache-tomcat-*/conf/
+apache-tomcat-*/logs/
+apache-tomcat-*/work/
+apache-tomcat-*/temp/
+
+# Database files
+*.sql
+*.db
+*.sqlite
+
+# OS-specific files
+.DS_Store
+Thumbs.db

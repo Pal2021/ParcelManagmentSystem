@@ -1,0 +1,77 @@
+package com;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+
+@WebServlet("/register")
+public class RegistrationServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    // Database connection parameters
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/parcelManagmentSystem";
+    private static final String DB_USER = "root";  // Your DB username
+    private static final String DB_PASSWORD = "password";  // Your DB password
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        // Get form data
+        String customerName = request.getParameter("customerName");
+        String email = request.getParameter("email");
+        String countryCode = request.getParameter("countryCode");
+        String mobile = request.getParameter("mobile");
+        String address = request.getParameter("address");
+        String userId = request.getParameter("userId");
+        String password = request.getParameter("password");
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            // Load MySQL JDBC Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Connect to the database
+            conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+
+            // SQL query to insert the data into Users table
+            String sql = "INSERT INTO Users (username, password, name, email, mobile_number, address, role) VALUES (?, ?, ?, ?, ?, ?, 'customer')";
+            pstmt = conn.prepareStatement(sql);
+
+            // Set the parameters
+            pstmt.setString(1, userId);
+            pstmt.setString(2, password);
+            pstmt.setString(3, customerName);
+            pstmt.setString(4, email);
+            pstmt.setString(5, countryCode + mobile);  // Combine country code and mobile number
+            pstmt.setString(6, address);
+
+            // Execute the query
+            int row = pstmt.executeUpdate();
+
+            if (row > 0) {
+                out.println("<h3>Registration successful!</h3>");
+            } else {
+                out.println("<h3>Error: Unable to register.</h3>");
+            }
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+            out.println("<h3>Error: " + e.getMessage() + "</h3>");
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
